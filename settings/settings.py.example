@@ -1,0 +1,2 @@
+GOOGLE_DRIVE_CREDENTIALS_FILE='credentials/example.json'
+DATA_REFERENCE_FILE='data/example.json'

@@ -1,0 +1,7 @@
+credentials/*.json
+settings/settings.py
+data/*.json
+topics.json
+
+.cpython-36.pyc
+*.pyc
