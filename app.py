@@ -6,9 +6,11 @@ from Google Spreadsheets to MongoDB JSON collection
 import json
 import hashlib
 import itertools
+from time import sleep
 
-import pygsheets
+import gspread
 import pcre
+from oauth2client.service_account import ServiceAccountCredentials
 
 from settings import settings
 
@@ -51,22 +53,22 @@ class TopicsExtractor:
         with open(settings.DATA_REFERENCE_FILE, 'r') as data_reference_file:
             self.data_reference = json.load(data_reference_file)
 
-
     def load_google_credentials(self):
-        self.google_credentials = pygsheets.authorize(
-                service_account_file=settings.GOOGLE_DRIVE_CREDENTIALS_FILE
-                )
+        scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+        self.google_credentials = gspread.authorize(
+                ServiceAccountCredentials.from_json_keyfile_name(
+                    settings.GOOGLE_DRIVE_CREDENTIALS_FILE, scope))
 
     def load_topics(self):
         for data_reference_item in self.data_reference:
             if self.verbose:
-                print("[EXPORT] Processing {}".format(data_reference_item['name']))
+                print("[EXPORT] {}".format(data_reference_item['name']))
             wks = self.google_credentials.open(data_reference_item['filename']).sheet1
             topic = data_reference_item.copy()
             del topic['filename']
             topic['_id'] = Utils.generate_id(topic['name'])
             topic['tags'] = []
-            for record in wks.get_all_records(value_render='UNFORMATTED_VALUE'):
+            for record in wks.get_all_records():
                 tag = {
                         'regex': record['regex'],
                         'tag': record['tag'],
@@ -76,6 +78,10 @@ class TopicsExtractor:
                 self.__validate(tag)
                 topic['tags'].append(tag)
             self.topics.append(topic)
+            '''
+            https://developers.google.com/sheets/api/limits
+            '''
+            sleep(100)
 
     def export_topics(self):
         file_out = open('topics.json', 'w')
