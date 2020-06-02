@@ -3,6 +3,7 @@ This Python script (re)generate topics
 from Google Spreadsheets to MongoDB JSON collection
 '''
 
+import sys
 import json
 import hashlib
 import itertools
@@ -57,21 +58,24 @@ class TopicsExtractor:
                 service_account_file=settings.GOOGLE_DRIVE_CREDENTIALS_FILE
                 )
 
-    def load_topics(self):
+    def load_topics(self, method=''):
         for data_reference_item in self.data_reference:
             if self.verbose:
-                print("[EXPORT] Processing {}".format(data_reference_item['name']))
+                print("[EXTRACT] {}".format(data_reference_item['name']))
             wks = self.google_credentials.open(data_reference_item['filename']).sheet1
             topic = data_reference_item.copy()
             del topic['filename']
+            if method == 'old':
+                del topic['shortname']
             topic['_id'] = Utils.generate_id(topic['name'])
             topic['tags'] = []
-            for record in wks.get_all_records(value_render='UNFORMATTED_VALUE'):
+            data = wks.get_values(grange=pygsheets.GridRange(worksheet=wks, start=None, end=None))
+            for row in data[1:]:
                 tag = {
-                        'regex': record['regex'],
-                        'tag': record['tag'],
-                        'subtopic': record['subtopic'],
-                        'shuffle': bool(record['shuffle']),
+                        'regex': row[3],
+                        'tag': row[2],
+                        'subtopic': row[1],
+                        'shuffle': bool(int(row[0]))
                         }
                 self.__validate(tag)
                 topic['tags'].append(tag)
@@ -79,18 +83,18 @@ class TopicsExtractor:
 
     def export_topics(self):
         file_out = open('topics.json', 'w')
-        file_out.write(json.dumps(self.topics, indent=True, ensure_ascii=True))
+        file_out.write(json.dumps(self.topics, indent=True, ensure_ascii=False))
         file_out.close()
+        print("[EXPORT] Created topics.json file")
 
-    def run(self):
+    def run(self, args):
+        method = args[1] if len(args) > 1 else ''
         self.load_data_reference()
         self.load_google_credentials()
-        self.load_topics()
+        self.load_topics(method)
         self.export_topics()
-
-
 
 
 if __name__ == '__main__':
     extractor = TopicsExtractor(verbose=True)
-    extractor.run()
+    extractor.run(sys.argv)
