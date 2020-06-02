@@ -21,7 +21,7 @@ class Utils:
             return hashlib.sha1(
                     u''.join(args).encode('utf-8')
                     ).hexdigest()
-        except:
+        except Exception:
             return 'ID_ERROR'
 
 
@@ -38,7 +38,6 @@ class TopicsExtractor:
         except Exception as e:
             print(tagname, e)
 
-
     def __validate(self, tag):
         if tag['shuffle']:
             delimiter = '.*?' if '.*?' in tag['regex'] else '.*'
@@ -51,7 +50,6 @@ class TopicsExtractor:
     def load_data_reference(self):
         with open(settings.DATA_REFERENCE_FILE, 'r') as data_reference_file:
             self.data_reference = json.load(data_reference_file)
-
 
     def load_google_credentials(self):
         self.google_credentials = pygsheets.authorize(
