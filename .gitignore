@@ -1,5 +1,4 @@
-credentials/*.json
-settings/settings.py
+credentials.json
 data/*.json
 topics.json
 

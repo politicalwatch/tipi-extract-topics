@@ -11,8 +11,6 @@ import itertools
 import pygsheets
 import pcre
 
-from settings import settings
-
 
 class Utils:
     @staticmethod
@@ -26,7 +24,10 @@ class Utils:
 
 
 class TopicsExtractor:
-    def __init__(self, verbose=False):
+
+    def __init__(self, verbose=False, args=list()):
+        self.GOOGLE_DRIVE_CREDENTIALS_FILE='credentials.json'
+        self.DATA_REFERENCE_FILE = args[1] if len(args) > 1 else ''
         self.verbose = verbose
         self.topics = list()
         self.data_reference = list()
@@ -48,23 +49,21 @@ class TopicsExtractor:
             self.__regex_validation(tag['tag'], tag['regex'])
 
     def load_data_reference(self):
-        with open(settings.DATA_REFERENCE_FILE, 'r') as data_reference_file:
+        with open(self.DATA_REFERENCE_FILE, 'r') as data_reference_file:
             self.data_reference = json.load(data_reference_file)
 
     def load_google_credentials(self):
         self.google_credentials = pygsheets.authorize(
-                service_account_file=settings.GOOGLE_DRIVE_CREDENTIALS_FILE
+                service_account_file=self.GOOGLE_DRIVE_CREDENTIALS_FILE
                 )
 
-    def load_topics(self, method=''):
+    def load_topics(self):
         for data_reference_item in self.data_reference:
             if self.verbose:
                 print("[EXTRACT] {}".format(data_reference_item['name']))
             wks = self.google_credentials.open(data_reference_item['filename']).sheet1
             topic = data_reference_item.copy()
             del topic['filename']
-            if method == 'old':
-                del topic['shortname']
             topic['_id'] = Utils.generate_id(topic['name'])
             topic['tags'] = []
             data = wks.get_values(grange=pygsheets.GridRange(worksheet=wks, start=None, end=None))
@@ -85,14 +84,13 @@ class TopicsExtractor:
         file_out.close()
         print("[EXPORT] Created topics.json file")
 
-    def run(self, args):
-        method = args[1] if len(args) > 1 else ''
+    def run(self):
         self.load_data_reference()
         self.load_google_credentials()
-        self.load_topics(method)
+        self.load_topics()
         self.export_topics()
 
 
 if __name__ == '__main__':
-    extractor = TopicsExtractor(verbose=True)
-    extractor.run(sys.argv)
+    extractor = TopicsExtractor(verbose=True, args=sys.argv)
+    extractor.run()

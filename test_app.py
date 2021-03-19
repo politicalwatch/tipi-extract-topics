@@ -6,7 +6,7 @@ from app import TopicsExtractor, \
 
 class TestApp(unittest.TestCase):
     def setUp(self):
-        self.extractor = TopicsExtractor()
+        self.extractor = TopicsExtractor(args=['', 'data/tipiciudadano.json'])
 
     def test_equals_ids(self):
         self.assertEqual(Utils.generate_id("Sanidad"), Utils.generate_id("Sanidad"))
@@ -47,7 +47,6 @@ class TestApp(unittest.TestCase):
                 }
         self.assertRaises(Exception, self.extractor._TopicsExtractor__validate, tag)
     '''
-
 
 
 if __name__ == '__main__':
