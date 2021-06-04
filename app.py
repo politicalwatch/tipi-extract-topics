@@ -68,6 +68,8 @@ class TopicsExtractor:
             topic['tags'] = []
             data = wks.get_values(grange=pygsheets.GridRange(worksheet=wks, start=None, end=None))
             for row in data[1:]:
+                if row[0] == '' and row[1] == '' and row[2] == '' and row[3] == '':
+                    continue
                 tag = {
                         'regex': row[3],
                         'tag': row[2],
