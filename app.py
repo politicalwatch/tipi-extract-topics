@@ -52,6 +52,9 @@ class TopicsExtractor:
         with open(self.DATA_REFERENCE_FILE, 'r') as data_reference_file:
             self.data_reference = json.load(data_reference_file)
 
+    def get_knowledge_base(self):
+        return self.DATA_REFERENCE_FILE.split('.')[0]
+
     def load_google_credentials(self):
         self.google_credentials = pygsheets.authorize(
                 service_account_file=self.GOOGLE_DRIVE_CREDENTIALS_FILE
@@ -77,6 +80,7 @@ class TopicsExtractor:
                         'shuffle': bool(int(row[0]))
                         }
                 self.__validate(tag)
+                topic['knowledgebase'] = self.get_knowledge_base()
                 topic['tags'].append(tag)
             self.topics.append(topic)
 
