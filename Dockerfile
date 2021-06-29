@@ -7,4 +7,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["python", "app.py", "data/tipiciudadano.json"]
+CMD ["tail", "-f", "/dev/null"]

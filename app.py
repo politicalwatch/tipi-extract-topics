@@ -49,7 +49,7 @@ class TopicsExtractor:
             self.__regex_validation(tag['tag'], tag['regex'])
 
     def load_data_reference(self):
-        with open(self.DATA_REFERENCE_FILE, 'r') as data_reference_file:
+        with open('./data/' + self.DATA_REFERENCE_FILE, 'r') as data_reference_file:
             self.data_reference = json.load(data_reference_file)
 
     def get_knowledge_base(self):
@@ -80,7 +80,7 @@ class TopicsExtractor:
                         'shuffle': bool(int(row[0]))
                         }
                 self.__validate(tag)
-                topic['knowledgebase'] = self.get_knowledge_base()
+                # topic['knowledgebase'] = self.get_knowledge_base()
                 topic['tags'].append(tag)
             self.topics.append(topic)
 
