@@ -67,7 +67,7 @@ class TopicsExtractor:
             wks = self.google_credentials.open(data_reference_item['filename']).sheet1
             topic = data_reference_item.copy()
             del topic['filename']
-            topic['_id'] = Utils.generate_id(topic['name'])
+            topic['_id'] = Utils.generate_id(topic['name'] + self.get_knowledge_base())
             topic['tags'] = []
             data = wks.get_values(grange=pygsheets.GridRange(worksheet=wks, start=None, end=None))
             for row in data[1:]:
@@ -80,7 +80,7 @@ class TopicsExtractor:
                         'shuffle': bool(int(row[0]))
                         }
                 self.__validate(tag)
-                # topic['knowledgebase'] = self.get_knowledge_base()
+                topic['knowledgebase'] = self.get_knowledge_base()
                 topic['tags'].append(tag)
             self.topics.append(topic)
 
