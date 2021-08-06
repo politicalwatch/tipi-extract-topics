@@ -81,6 +81,7 @@ class TopicsExtractor:
                         }
                 self.__validate(tag)
                 topic['knowledgebase'] = self.get_knowledge_base()
+                topic['public'] = True
                 topic['tags'].append(tag)
             self.topics.append(topic)
 
