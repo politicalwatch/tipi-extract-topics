@@ -26,7 +26,7 @@ class Utils:
 class TopicsExtractor:
 
     def __init__(self, verbose=False, args=list()):
-        self.GOOGLE_DRIVE_CREDENTIALS_FILE='credentials.json'
+        self.GOOGLE_DRIVE_CREDENTIALS_FILE = 'credentials.json'
         self.DATA_REFERENCE_FILE = args[1] if len(args) > 1 else ''
         self.verbose = verbose
         self.topics = list()
