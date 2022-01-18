@@ -5,22 +5,11 @@ from Google Spreadsheets to MongoDB JSON collection
 
 import sys
 import json
-import hashlib
 import itertools
 
 import pygsheets
 import pcre
-
-
-class Utils:
-    @staticmethod
-    def generate_id(*args):
-        try:
-            return hashlib.sha1(
-                    u''.join(args).encode('utf-8')
-                    ).hexdigest()
-        except Exception:
-            return 'ID_ERROR'
+from slugify import slugify
 
 
 class TopicsExtractor:
@@ -67,7 +56,7 @@ class TopicsExtractor:
             wks = self.google_credentials.open(data_reference_item['filename']).sheet1
             topic = data_reference_item.copy()
             del topic['filename']
-            topic['_id'] = Utils.generate_id(topic['name'] + self.get_knowledge_base())
+            topic['_id'] = slugify(topic['shortname'].lower())
             topic['tags'] = []
             data = wks.get_values(grange=pygsheets.GridRange(worksheet=wks, start=None, end=None))
             for row in data[1:]:
