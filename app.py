@@ -59,7 +59,7 @@ class TopicsExtractor:
                 grange=pygsheets.GridRange(worksheet=wks, start=None, end=None)
             )
             for row in data[1:]:
-                if row[0] == "" and row[1] == "" and row[2] == "" and row[3] == "":
+                if row[0] == "" or row[1] == "" or row[2] == "" or row[3] == "":
                     continue
                 tag = {
                     "regex": row[3],
